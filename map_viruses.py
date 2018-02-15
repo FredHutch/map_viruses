@@ -31,6 +31,9 @@ if __name__ == "__main__":
                         type=str,
                         help="""DIAMOND-formatted reference database (ending .dmnd).
                                 (Supported: s3://, ftp://, or local path).""")
+    parser.add_argument("--metadata",
+                        type=str,
+                        help="TSV with metadata linking proteins and genomes.")
     parser.add_argument("--output-folder",
                         type=str,
                         help="""Folder to place results.
@@ -93,21 +96,21 @@ if __name__ == "__main__":
     logging.info("Reference database: " + db_fp)
 
     try:
-        mapping_fp = get_reference_database(
-            args.mapping,
+        metadata_fp = get_reference_database(
+            args.metadata,
             temp_folder
         )
     except:
         exit_and_clean_up(temp_folder)
 
-    logging.info("Mapping file: " + mapping_fp)
+    logging.info("Metadata file: " + metadata_fp)
 
     try:
-        mapping = pd.read_table(mapping_fp, sep='\t')
+        metadata = pd.read_table(metadata_fp, sep='\t')
     except:
         exit_and_clean_up(temp_folder)
 
-    logging.info("Read in mapping data")
+    logging.info("Read in metadata file")
 
     # Align each of the inputs and calculate the overall abundance
     for input_str in args.input.split(','):
@@ -151,7 +154,7 @@ if __name__ == "__main__":
             exit_and_clean_up(temp_folder)
 
         # From a set of alignments against proteins, summarize the genome
-        genome_dat = summarize_genomes(protein_abund, mapping)
+        protein_abund, genome_dat = summarize_genomes(protein_abund, metadata)
 
         # Name the output file based on the input file
         # Ultimately adding ".json.gz" to the input file name
@@ -175,7 +178,10 @@ if __name__ == "__main__":
             "logs": logs,
             "ref_db": db_fp,
             "ref_db_url": args.ref_db,
-            "results": abund,
+            "results": {
+                "proteins": protein_abund,
+                "genomes": genome_dat,
+            },
             "total_reads": n_reads,
             "time_elapsed": time.time() - start_time
         }

@@ -2,52 +2,64 @@
 
 import logging
 import numpy as np
+import pandas as pd
 from collections import defaultdict
 
 
-def summarize_genomes(protein_abund, mapping):
+def summarize_genomes(protein_abund, metadata):
     """From a set of protein abundances, summarize the genomes."""
 
-    # Cache the stats for the proteins
-    prot_stats = {
-        k: {
-            p["protein"]: p[k]
-            for p in protein_abund
-        }
-        for k in ["coverage", "depth", "pctid", "bitscore", "alen", "nreads"]
-    }
+    # Format the protein data as a DataFrame
+    protein_abund = pd.DataFrame(protein_abund).set_index("protein")
 
+    # Add the detected protein information to the metadata table
+    for k in [
+        "coverage", "depth", "pctid", "bitscore", "alen", "nreads", "length"
+    ]:
+        metadata[k] = metadata["protein"].apply(
+            protein_abund[k].to_dict().get
+        ).fillna(0)
+
+    # Subset to the GENOMES that have _any_ proteins detected
+    metadata = pd.concat([
+        genome_dat
+        for genome, genome_dat in metadata.groupby("genome")
+        if (genome_dat["coverage"] > 0).any()
+    ])
+
+    # Save the protein summary for these genomes
+    protein_abund = metadata.to_dict(orient="records")
+
+    # Now make a summary on a per-genome basis
     genome_abund = []
     # Iterate over all of the genomes
-    for genome, proteins in mapping.groupby("genome"):
+    for genome, proteins in metadata.groupby("genome"):
+
+        # Calculate the aggregate genome length
+        agg_len = proteins["length"].sum()
 
         # Calculate the aggregate coverage, depth, number of proteins, etc.
-
-        # Number of proteins with any reads detected
-        cov_prots = sum(proteins["protein"].apply(lambda p: p in prot_stats))
-        if cov_prots == 0:
-            continue
-        logging.info("Collecting stats for {}".format(genome))
-        # Total number of proteins in this genome
-        tot_prots = proteins.shape[0]
-
         dat = {
+            "total_length": int(agg_len),
+            "total_proteins": proteins.shape[0],
+            "detected_proteins": (proteins["coverage"] > 0).sum(),
             "genome": genome,
-            "total_proteins": tot_prots,
-            "detected_proteins": cov_prots,
+            "nreads": int(proteins["nreads"].sum()),
         }
 
-        # Add stats to the table
-        for stat in [
-            "coverage", "depth", "pctid", "bitscore", "alen", "nreads"
-        ]:
-            proteins[stat] = proteins["protein"].apply(
-                lambda p: prot_stats[stat].get(p, 0))
-            dat[stat] = (proteins[stat] * proteins["length"]).sum() / proteins["length"].sum()
+        for k in ["coverage", "depth", "pctid", "bitscore", "alen"]:
+            # Make a length-adjusted average
+            dat[k] = (proteins[k] * proteins["length"]).sum() / agg_len
+
+        # For all of the other columns, add them if they are unique
+        for k in proteins.columns:
+            if k not in dat:
+                if len(proteins[k].unique()) == 0:
+                    dat[k] = proteins[k].values[0]
 
         genome_abund.append(dat)
 
-    return genome_abund
+    return protein_abund, genome_abund
 
 
 def parse_alignment(align_fp,

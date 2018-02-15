@@ -34,3 +34,9 @@
   [[ "$h" =~ "Success" ]]
 }
 
+@test "Genome summary" {
+  h="$(python /usr/map_viruses/lib/test_genome_summary.py)"
+
+  [[ "$h" =~ "Success" ]]
+}
+
