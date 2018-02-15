@@ -15,15 +15,15 @@ RUN mkdir /share
 WORKDIR /share
 
 # Add files
-RUN mkdir /usr/famli
-ADD requirements.txt /usr/famli
+RUN mkdir /usr/map_viruses
+ADD requirements.txt /usr/map_viruses
 
 # Install python requirements
-RUN pip install -r /usr/famli/requirements.txt && rm /usr/famli/requirements.txt
+RUN pip install -r /usr/map_viruses/requirements.txt && rm /usr/map_viruses/requirements.txt
 
 
 # Install DIAMOND v0.9.10
-RUN cd /usr/famli && \
+RUN cd /usr/map_viruses && \
 	wget -q https://github.com/bbuchfink/diamond/releases/download/v0.9.10/diamond-linux64.tar.gz && \
 	tar xzf diamond-linux64.tar.gz && \
 	mv diamond /usr/bin/ && \

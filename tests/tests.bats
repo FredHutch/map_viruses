@@ -23,9 +23,9 @@
 }
 
 @test "Make sure the run script is in the PATH" {
-  h="$(famli.py -h 2>&1)"
+  h="$(map_viruses.py -h 2>&1)"
 
-  [[ "$h" =~ "FAMLI" ]]
+  [[ "$h" =~ "Align a set of reads" ]]
 }
 
 #@test "Parse the alignments" {
