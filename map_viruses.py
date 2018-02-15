@@ -7,6 +7,7 @@ import time
 import shutil
 import logging
 import argparse
+import pandas as pd
 from lib.exec_helpers import align_reads
 from lib.exec_helpers import return_results
 from lib.exec_helpers import exit_and_clean_up
@@ -15,7 +16,7 @@ from lib.fastq_helpers import get_reads_from_url
 from lib.fastq_helpers import count_fastq_reads
 from lib.aln_helpers import parse_alignment
 from lib.aln_helpers import read_mapping_tsv
-
+from lib.aln_helpers import summarize_genomes
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="""
@@ -103,7 +104,7 @@ if __name__ == "__main__":
     logging.info("Mapping file: " + mapping_fp)
 
     try:
-        mapping = read_mapping_tsv(mapping_fp)
+        mapping = pd.read_table(mapping_fp, sep='\t')
     except:
         exit_and_clean_up(temp_folder)
 
@@ -151,7 +152,7 @@ if __name__ == "__main__":
             exit_and_clean_up(temp_folder)
 
         # From a set of alignments against proteins, summarize the genome
-        genome_dat = summarize_genomes(protein_abund, )
+        genome_dat = summarize_genomes(protein_abund, mapping)
 
         # Name the output file based on the input file
         # Ultimately adding ".json.gz" to the input file name

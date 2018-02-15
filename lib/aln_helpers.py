@@ -5,71 +5,59 @@ import numpy as np
 from collections import defaultdict
 
 
-def read_mapping_tsv(mapping_fp):
-    """Read in the mapping file."""
-    logging.info("Reading in the mapping file ({})".format(mapping_fp))
-    with open(mapping_fp, "rt") as f:
-        header = f.readline()
-    header = header.rstrip("\n").split("\t")
-    assert 'protein' in header
-    assert 'genome' in header
-    assert 'length' in header
-
-    # Keep track of all of the information for a given genome
-    genome_dat = defaultdict(lambda: defaultdict(set))
-
-    # Keep track of which protein is a part of which genome
-    protein_genome = {}
-
-    # Keep track of the length of each protein
-    protein_length = {}
-
-    with open(mapping_fp, "rt") as f:
-        for ix, line in enumerate(f):
-            if len(line) == 1:
-                continue
-            elif ix == 0:
-                continue
-            else:
-                line = line.rstrip("\n").split("\t")
-                assert len(line) == len(header)
-
-                entry = dict(zip(header, line))
-
-                protein_genome[entry["protein"]] = entry["genome"]
-                protein_length[entry["protein"]] = entry["length"]
-
-                for k, v in entry.items():
-                    if k not in ["protein", "genome", "length"]:
-                        genome_dat[entry["genome"]][k].add(v)
-
-    # Reformat the genome dat as a dict of dicts, with values as strings
-    genome_dat = {
-        genome: {
-            k: "; ".join(list(v))
-            for k, v in values.items()
-        }
-        for genome, values in genome_dat.items()
-    }
-
-    return protein_genome, protein_length, genome_dat
-
-
 def summarize_genomes(protein_abund, mapping):
     """From a set of protein abundances, summarize the genomes."""
-    protein_genome, protein_length, genome_dat = mapping
 
-    return
+    # Cache the stats for the proteins
+    prot_stats = {
+        k: {
+            p["protein"]: p[k]
+            for p in protein_abund
+        }
+        for k in ["coverage", "depth", "pctid", "bitscore", "alen", "nreads"]
+    }
+
+    genome_abund = []
+    # Iterate over all of the genomes
+    for genome, proteins in mapping.groupby("genome"):
+
+        # Calculate the aggregate coverage, depth, number of proteins, etc.
+
+        # Number of proteins with any reads detected
+        cov_prots = sum(proteins["protein"].apply(lambda p: p in prot_stats))
+        if cov_prots == 0:
+            continue
+        logging.info("Collecting stats for {}".format(genome))
+        # Total number of proteins in this genome
+        tot_prots = proteins.shape[0]
+
+        dat = {
+            "genome": genome,
+            "total_proteins": tot_prots,
+            "detected_proteins": cov_prots,
+        }
+
+        # Add stats to the table
+        for stat in [
+            "coverage", "depth", "pctid", "bitscore", "alen", "nreads"
+        ]:
+            proteins[stat] = proteins["protein"].apply(
+                lambda p: prot_stats[stat].get(p, 0))
+            dat[stat] = (proteins[stat] * proteins["length"]).sum() / proteins["length"].sum()
+
+        genome_abund.append(dat)
+
+    return genome_abund
 
 
 def parse_alignment(align_fp,
-                    subject_len,
                     subject_ix=1,
                     pctid_ix=2,
                     alen_ix=3,
                     sstart_ix=6,
                     send_ix=7,
-                    bitscore_ix=9):
+                    bitscore_ix=9,
+                    slen_ix=11):
     """
     Parse an alignment in BLAST6 format and calculate coverage per subject.
     """
@@ -86,8 +74,8 @@ def parse_alignment(align_fp,
             line = line.rstrip("\n").split("\t")
             s = line[subject_ix]
             if s not in coverage:
-                assert s in subject_len
-                coverage[s] = np.zeros(subject_len[s], dtype=int)
+                slen = int(line[slen_ix])
+                coverage[s] = np.zeros(slen, dtype=int)
 
             pctid[s].append(float(line[pctid_ix]))
             alen[s].append(int(line[alen_ix]))
