@@ -80,6 +80,7 @@ if __name__ == "__main__":
                     "locus_tag": locus_tag,
                     "genome": genome,
                     "region": genome_range,
+                    "length": len(record.sequence),
                 })
                 if ix > 0 and ix % 1e3 == 0:
                     logging.info("Parsed {:,} sequence records".format(ix))
