@@ -83,7 +83,6 @@ if __name__ == "__main__":
                 })
                 if ix > 0 and ix % 1e3 == 0:
                     logging.info("Parsed {:,} sequence records".format(ix))
-                    break
 
     df = pd.DataFrame(dat)
 
