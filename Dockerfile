@@ -40,10 +40,12 @@ RUN cd /usr/local/bin && \
 
 # Add the run script to the PATH
 ADD map_viruses.py /usr/map_viruses
+ADD make_viral_db.py /usr/map_viruses
 ADD lib /usr/map_viruses/lib
 RUN cd /usr/map_viruses && \
 	chmod +x map_viruses.py && \
-	ln -s /usr/map_viruses/map_viruses.py /usr/bin/
+	ln -s /usr/map_viruses/map_viruses.py /usr/bin/  && \
+	ln -s /usr/map_viruses/make_viral_db.py /usr/bin/
 
 
 # Run tests and then remove the folder
