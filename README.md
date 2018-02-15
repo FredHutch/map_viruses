@@ -1,5 +1,7 @@
 # Map Viruses
-Align short reads against viral genomes in protein space
+### Align short reads against viral genomes in protein space
+
+[![Docker Repository on Quay](https://quay.io/repository/fhcrc-microbiome/map_viruses/status "Docker Repository on Quay")](https://quay.io/repository/fhcrc-microbiome/map_viruses)
 
 
 Researchers frequently want to detect viral genomes from short read metagenomic datasets. 
@@ -17,8 +19,9 @@ The workflow is as follows:
 
 
 This repository contains the information needed to build a Docker image, the preferred way
-to run any bioinfomatic analysis. Only a single command is needed to run the analysis from
-start to finish:
+to run any bioinfomatic analysis. 
+
+Only a single command is needed to run the analysis from start to finish:
 
 ```
 map_viruses.py \
@@ -53,16 +56,52 @@ The output will be placed in a given directory in JSON.GZ format, including the 
 
 ```
 {
+	"ref_db": STR,
+	"input_path": STR,
+	"logs": [STR, STR, ...],
+	"time_elapsed": FLOAT,
 	"input": STR,
-	"results": [
-		{
-			"genome": STR,
-			"species": STR,
-			"coverage": FLOAT,
-			"depth": FLOAT,
-			"nreads": INT,
-		}
-	]
+	"total_reads": INT,
+	"ref_db_url": STR,
+	"output_folder": STR,
+	"results": {
+		"genomes": [
+			{
+		        "detected_proteins": 11,
+		        "bitscore": 61.93033541343649,
+		        "total_proteins": 11,
+		        "pctid": 96.52610358441636,
+		        "alen": 29.473899008492843,
+		        "depth": 263.93339063171464,
+		        "genome": "NC_001422.1",
+		        "coverage": 0.9716373012462398,
+		        "nreads": 20833,
+		        "total_length": 2327
+		    },
+		    ...
+		],
+		"proteins": [
+	        {
+		        "definition": "internal scaffolding protein [Enterobacteria phage phiX174 sensu lato]",
+		        "product": "internal scaffolding protein",
+		        "bitscore": 62.25130237825595,
+		        "alen": 29.160815402038505,
+		        "taxonomy": "Viruses; ssDNA viruses; Microviridae; Bullavirinae; Phix174microvirus; unclassified Phix174microvirus",
+		        "region": "5075..5386,NC_001422.1:1..51)",
+		        "pctid": 96.95537938844848,
+		        "locus_tag": "phiX174p03",
+		        "taxid": 374840,
+		        "length": 120,
+		        "depth": 214.56666666666666,
+		        "genome": "NC_001422.1",
+		        "coverage": 1,
+		        "nreads": 883,
+		        "protein": "NP_040705",
+		        "organism": "Enterobacteria phage phiX174 sensu lato"
+	        },
+	        ...
+		]
+	}
 }
 ```
 
