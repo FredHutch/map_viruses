@@ -64,6 +64,7 @@ def parse_alignment(align_fp,
 
     # Keep track of a number of different metrics for each subject
     coverage = {}
+    subject_len = {}
     pctid = defaultdict(list)
     alen = defaultdict(list)
     bitscore = defaultdict(list)
@@ -71,10 +72,13 @@ def parse_alignment(align_fp,
     logging.info("Reading from {}".format(align_fp))
     with open(align_fp, "rt") as f:
         for ix, line in enumerate(f):
+            if len(line) == 1:
+                continue
             line = line.rstrip("\n").split("\t")
             s = line[subject_ix]
             if s not in coverage:
                 slen = int(line[slen_ix])
+                subject_len[s] = slen
                 coverage[s] = np.zeros(slen, dtype=int)
 
             pctid[s].append(float(line[pctid_ix]))
@@ -82,7 +86,7 @@ def parse_alignment(align_fp,
             bitscore[s].append(float(line[bitscore_ix]))
 
             coverage[s][
-                int(line[sstart_ix]): int(line[send_ix])
+                (int(line[sstart_ix]) - 1): int(line[send_ix])
             ] += 1
 
             if ix > 0 and ix % 1e6 == 0:
@@ -100,7 +104,8 @@ def parse_alignment(align_fp,
             "pctid": np.mean(pctid[s]),
             "alen": np.mean(alen[s]),
             "bitscore": np.mean(bitscore[s]),
-            "nreads": len(pctid[s])
+            "nreads": len(pctid[s]),
+            "length": subject_len[s],
         })
         if ix > 0 and ix % 1e3 == 0:
             logging.info("Summarized coverage for {:,} subjects".format(ix))

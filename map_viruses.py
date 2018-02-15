@@ -15,7 +15,6 @@ from lib.exec_helpers import get_reference_database
 from lib.fastq_helpers import get_reads_from_url
 from lib.fastq_helpers import count_fastq_reads
 from lib.aln_helpers import parse_alignment
-from lib.aln_helpers import read_mapping_tsv
 from lib.aln_helpers import summarize_genomes
 
 if __name__ == "__main__":
@@ -147,7 +146,7 @@ if __name__ == "__main__":
 
         # Process the alignments, calculating genome coverage
         try:
-            protein_abund = parse_alignment(align_fp, args.mapping_fp)
+            protein_abund = parse_alignment(align_fp)
         except:
             exit_and_clean_up(temp_folder)
 

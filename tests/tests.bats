@@ -27,3 +27,10 @@
 
   [[ "$h" =~ "Align a set of reads" ]]
 }
+
+@test "Alignment parser" {
+  h="$(python /usr/map_viruses/lib/test_alignment_parser.py)"
+
+  [[ "$h" =~ "Success" ]]
+}
+
