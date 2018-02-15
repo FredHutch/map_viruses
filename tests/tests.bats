@@ -40,3 +40,8 @@
   [[ "$h" =~ "Success" ]]
 }
 
+@test "Integration" {
+  h="$(python /usr/map_viruses/tests/integration.py)"
+
+  [[ "$h" =~ "Success" ]]
+}
