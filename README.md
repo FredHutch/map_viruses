@@ -27,7 +27,7 @@ Only a single command is needed to run the analysis from start to finish:
 map_viruses.py \
 	--input <PATH_TO_INPUT_FILE> \
 	--ref-db <REFERENCE_DATABASE> \
-	--mapping <MAPPING_FILE> \
+	--metadata <MAPPING_FILE> \
 	--output <DIRECTORY_FOR_OUTPUT> \
 ```
 
