@@ -104,5 +104,5 @@ if __name__ == "__main__":
     run_cmds([
         "diamond", "makedb",
         "--in", "{}.fastp".format(args.prefix),
-        "--db", args.prefix
+        "--d", args.prefix
     ])
