@@ -90,6 +90,8 @@ def align_reads(read_fp,               # FASTQ file path
 
 def get_reference_database(ref_db, temp_folder, ending=None):
     """Get a reference database folder."""
+    assert ref_db is not None, "Must provide reference database path"
+    assert temp_folder is not None, "Must provide temp folder"
     if ending is not None:
         msg = "Ref DB must end with {} ({})"
         assert ref_db.endswith(ending), msg.format(ending, ref_db)
