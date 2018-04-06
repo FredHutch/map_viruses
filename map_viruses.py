@@ -25,17 +25,21 @@ if __name__ == "__main__":
 
     parser.add_argument("--input",
                         type=str,
+                        required=True,
                         help="""Location for input file(s). Comma-separated.
                                 (Supported: sra://, s3://, or ftp://).""")
     parser.add_argument("--ref-db",
                         type=str,
+                        required=True,
                         help="""DIAMOND-formatted reference database (ending .dmnd).
                                 (Supported: s3://, ftp://, or local path).""")
     parser.add_argument("--metadata",
                         type=str,
+                        required=True,
                         help="TSV with metadata linking proteins and genomes.")
     parser.add_argument("--output-folder",
                         type=str,
+                        required=True,
                         help="""Folder to place results.
                                 (Supported: s3://, or local path).""")
     parser.add_argument("--overwrite",
