@@ -49,7 +49,9 @@ RUN cd /usr/map_viruses && \
 
 
 # Add a wrapper to help execution via SciLuigi
-RUN pip3 install bucket_command_wrapper==0.1.0
+RUN apt-get install -y python3-pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN pip3 install bucket_command_wrapper==0.1.0 
 
 
 # Run tests and then remove the folder
