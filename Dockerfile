@@ -48,6 +48,10 @@ RUN cd /usr/map_viruses && \
 	ln -s /usr/map_viruses/make_viral_db.py /usr/bin/
 
 
+# Add a wrapper to help execution via SciLuigi
+RUN pip3 install bucket_command_wrapper==0.1.0
+
+
 # Run tests and then remove the folder
 ADD tests /usr/map_viruses/tests
 RUN bats /usr/map_viruses/tests/ && rm -r /usr/map_viruses/tests/
