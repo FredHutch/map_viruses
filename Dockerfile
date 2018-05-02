@@ -14,6 +14,9 @@ ENV LC_ALL C
 RUN mkdir /share
 WORKDIR /share
 
+# Add /scratch
+RUN mkdir /scratch
+
 # Add files
 RUN mkdir /usr/map_viruses
 ADD requirements.txt /usr/map_viruses
