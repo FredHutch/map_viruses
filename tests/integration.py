@@ -11,7 +11,7 @@ subprocess.call([
     "--input", "/usr/map_viruses/tests/example.fastq",
     "--metadata", "/usr/map_viruses/tests/example.tsv",
     "--ref-db", "/usr/map_viruses/tests/example.dmnd",
-    "--output-folder", "/usr/map_viruses/tests/",
+    "--output-path", "/usr/map_viruses/tests/example.fastq.json.gz",
 ])
 
 output = json.load(gzip.open(output_fp))

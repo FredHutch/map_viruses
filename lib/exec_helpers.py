@@ -131,10 +131,10 @@ def get_reference_database(ref_db, temp_folder, ending=None):
         return ref_db
 
 
-def return_results(out, read_prefix, output_folder, temp_folder):
+def return_results(out, output_path, temp_folder):
     """Write out the final results as a JSON object."""
     # Make a temporary file
-    temp_fp = os.path.join(temp_folder, read_prefix + '.json')
+    temp_fp = os.path.join(temp_folder, 'temp.json')
     with open(temp_fp, 'wt') as fo:
         json.dump(out, fo)
 
@@ -142,7 +142,7 @@ def return_results(out, read_prefix, output_folder, temp_folder):
     run_cmds(['gzip', temp_fp])
     temp_fp = temp_fp + '.gz'
 
-    if output_folder.startswith('s3://'):
+    if output_path.startswith('s3://'):
         # Copy to S3
         run_cmds([
             'aws',
@@ -152,11 +152,11 @@ def return_results(out, read_prefix, output_folder, temp_folder):
             '--sse',
             'AES256',
             temp_fp,
-            output_folder])
+            output_path])
         os.unlink(temp_fp)
     else:
         # Copy to local folder
-        run_cmds(['mv', temp_fp, output_folder])
+        run_cmds(['mv', temp_fp, output_path])
 
 
 def exit_and_clean_up(temp_folder):
