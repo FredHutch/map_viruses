@@ -191,10 +191,6 @@ if __name__ == "__main__":
     logging.info("Removing temporary folder: " + temp_folder)
     shutil.rmtree(temp_folder)
 
-    # Delete any files that were created for this sample
-    logging.info("Removing temporary folder: " + temp_folder)
-    shutil.rmtree(temp_folder)
-
     # Stop logging
     logging.info("Done")
     logging.shutdown()
