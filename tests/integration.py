@@ -1,5 +1,6 @@
 #!/usr/local/python
 
+import os
 import gzip
 import json
 import subprocess
@@ -28,5 +29,17 @@ assert genome_dat[0]["nreads"] == 20833
 assert genome_dat[0]["total_proteins"] == 11
 assert genome_dat[0]["detected_proteins"] == 11
 assert genome_dat[0]["total_length"] == 2327
+
+# Now try keeping the alignment file
+subprocess.call([
+    "map_viruses.py",
+    "--input", "/usr/map_viruses/tests/example.fastq",
+    "--metadata", "/usr/map_viruses/tests/example.tsv",
+    "--ref-db", "/usr/map_viruses/tests/example.dmnd",
+    "--output-path", "/usr/map_viruses/tests/example.fastq.json.gz",
+    "--keep-alignments"
+])
+
+assert os.path.exists("/usr/map_viruses/tests/example.fastq.sam.gz")
 
 print("Success")

@@ -10,6 +10,7 @@ import argparse
 import pandas as pd
 from lib.exec_helpers import align_reads
 from lib.exec_helpers import return_results
+from lib.exec_helpers import return_alignments
 from lib.exec_helpers import exit_and_clean_up
 from lib.exec_helpers import get_reference_database
 from lib.fastq_helpers import get_reads_from_url
@@ -58,6 +59,9 @@ if __name__ == "__main__":
                         type=int,
                         default=16,
                         help="Number of threads to use aligning.")
+    parser.add_argument("--keep-alignments",
+                        action="store_true",
+                        help="Return the raw alignment files.")
     parser.add_argument("--temp-folder",
                         type=str,
                         default='/share',
@@ -163,6 +167,10 @@ if __name__ == "__main__":
     logging.info("Counting the total number of reads")
     n_reads = count_fastq_reads(read_fp)
     logging.info("Reads in input file: {}".format(n_reads))
+
+    # If --keep-alignments is given, return the alignment file
+    if args.keep_alignments:
+        return_alignments(align_fp, args.output_path.replace(".json.gz", ".sam.gz"))
 
     # Read in the logs
     logging.info("Reading in the logs")

@@ -131,6 +131,37 @@ def get_reference_database(ref_db, temp_folder, ending=None):
         return ref_db
 
 
+def return_alignments(align_fp, output_path):
+    """Return the alignment file."""
+    logging.info("Compressing " + align_fp)
+    run_cmds([
+        "pigz", align_fp
+    ])
+    align_fp = align_fp + ".gz"
+    assert os.path.exists(align_fp)
+    
+    # Make sure that the file has a consistent ending
+    assert align_fp.endswith(".sam.gz")
+    assert output_path.endswith(".sam.gz")
+    
+    if output_path.startswith("s3:/"):
+        # Copy to S3
+        run_cmds([
+            'aws',
+            's3',
+            'cp',
+            '--quiet',
+            '--sse',
+            'AES256',
+            align_fp,
+            output_path
+        ])
+        os.unlink(align_fp)
+    else:
+        # Copy to local folder
+        run_cmds(['mv', align_fp, output_path])
+
+
 def return_results(out, output_path, temp_folder):
     """Write out the final results as a JSON object."""
     # Make a temporary file

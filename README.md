@@ -15,7 +15,7 @@ The workflow is as follows:
 	2. Align raw reads against the reference database
 	3. Keep all alignments for each read with amino acid similarity no more than 10% below than the best alignment
 	4. Calculate the coverage and depth across each genome
-	5. Copy the results in JSON format to the output directory
+	5. Copy the results in JSON format to the output location
 
 
 This repository contains the information needed to build a Docker image, the preferred way
@@ -28,8 +28,10 @@ map_viruses.py \
 	--input <PATH_TO_INPUT_FILE> \
 	--ref-db <REFERENCE_DATABASE> \
 	--mapping <MAPPING_FILE> \
-	--output <DIRECTORY_FOR_OUTPUT> \
+	--output_path <FILEPATH_FOR_OUTPUT> \
 ```
+
+The `output_path` must end in `.json.gz`, as it will be formatted as a gzipped JSON file.
 
 Read about additional parameters with `map_viruses.py --help`.
 
@@ -105,6 +107,11 @@ The output will be placed in a given directory in JSON.GZ format, including the 
 }
 ```
 
+### Saving raw alignment files
+
+If you would like to store the raw alignment files, use the `--keep-alignments` flag. This will copy
+a file ending in ".sam.gz" to the output path that you specify, in addition to the other output files.
+
 
 ### Making a reference database
 
@@ -123,4 +130,4 @@ Finally, when invoking `map_viruses.py`, use `--ref-db` to point to the DIAMOND 
 
 **Automatically create a database**
 
-You can automatically create a database by running the command `make_viral_db.py`.
+You can automatically create a database by running the command `make_viral_db.py`. 
