@@ -5,7 +5,8 @@ MAINTAINER sminot@fredhutch.org
 RUN apt update && \
 	apt-get install -y build-essential wget unzip python2.7 \
 					   python-dev git python-pip bats awscli curl \
-					   libcurl4-openssl-dev make gcc zlib1g-dev pigz
+					   libcurl4-openssl-dev make gcc zlib1g-dev pigz \
+					   python3-pip
 
 # Set the default langage to C
 ENV LC_ALL C
@@ -23,6 +24,9 @@ ADD requirements.txt /usr/map_viruses
 
 # Install python requirements
 RUN pip install -r /usr/map_viruses/requirements.txt && rm /usr/map_viruses/requirements.txt
+
+# Add a wrapper to help execution via SciLuigi
+RUN pip3 install bucket_command_wrapper==0.2.0 
 
 
 # Install DIAMOND v0.9.10
@@ -49,12 +53,6 @@ RUN cd /usr/map_viruses && \
 	chmod +x map_viruses.py && \
 	ln -s /usr/map_viruses/map_viruses.py /usr/bin/  && \
 	ln -s /usr/map_viruses/make_viral_db.py /usr/bin/
-
-
-# Add a wrapper to help execution via SciLuigi
-RUN apt-get install -y python3-pip
-RUN pip3 install bucket_command_wrapper==0.2.0 
-
 
 # Run tests and then remove the folder
 ADD tests /usr/map_viruses/tests

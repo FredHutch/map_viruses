@@ -14,11 +14,13 @@ def summarize_genomes(protein_abund, metadata):
 
     # Add the detected protein information to the metadata table
     for k in [
-        "coverage", "depth", "pctid", "bitscore", "alen", "nreads", "length"
+        "coverage", "depth", "pctid", "bitscore", "alen", "nreads"
     ]:
         metadata[k] = metadata["protein"].apply(
             protein_abund[k].to_dict().get
         ).fillna(0)
+
+    assert (metadata["length"] > 0).all()
 
     # Subset to the GENOMES that have _any_ proteins detected
     metadata = pd.concat([
